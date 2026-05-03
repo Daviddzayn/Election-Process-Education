@@ -193,22 +193,32 @@ function renderFaqs(query = '') {
     (activeCategory === 'All' || f.category === activeCategory) &&
     (!q || f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q))
   );
-  if (!filtered.length) { list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:2rem">No results found. Try a different search.</p>'; return; }
+  if (!filtered.length) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:2rem">No results found. Try a different search.</p>';
+    return;
+  }
+  // Fix #7: FAQ questions rendered as <button> with aria-expanded for full keyboard & screen-reader support
   list.innerHTML = filtered.map((f, i) => `
     <div class="faq-item" id="faq${i}">
-      <div class="faq-question" data-faq="${i}">
+      <button class="faq-question" data-faq="${i}" aria-expanded="false" aria-controls="faq-answer-${i}">
         <span>${f.q}</span>
-        <span class="faq-chevron">▼</span>
-      </div>
-      <div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div>
+        <span class="faq-chevron" aria-hidden="true">▼</span>
+      </button>
+      <div class="faq-answer" id="faq-answer-${i}" role="region" aria-label="${f.q}"><div class="faq-answer-inner">${f.a}</div></div>
     </div>
   `).join('');
-  list.querySelectorAll('.faq-question').forEach(q => {
-    q.addEventListener('click', () => {
-      const item = q.closest('.faq-item');
+  list.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
       const wasOpen = item.classList.contains('open');
-      list.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!wasOpen) item.classList.add('open');
+      list.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
     });
   });
 }
@@ -253,6 +263,10 @@ document.getElementById('startQuizBtn').addEventListener('click', () => {
   trackEvent('quiz_start');
 });
 
+/**
+ * Renders the current quiz question, options, and updates progress.
+ * Fix #8: Each option has role=radio and aria-label for screen readers.
+ */
 function renderQuestion() {
   answered = false;
   document.getElementById('nextQuizBtn').classList.add('hidden');
@@ -261,31 +275,35 @@ function renderQuestion() {
   document.getElementById('quizScore').textContent = `Score: ${quizScore}`;
   document.getElementById('quizProgressFill').style.width = `${(quizIdx / questions.length) * 100}%`;
   document.getElementById('quizQuestion').textContent = q.q;
-  document.getElementById('quizOptions').innerHTML = q.opts.map((o, i) => `
-    <button class="quiz-opt" data-idx="${i}">${o}</button>
+  const optContainer = document.getElementById('quizOptions');
+  optContainer.innerHTML = q.opts.map((o, i) => `
+    <button class="quiz-opt" data-idx="${i}" aria-label="Option ${i + 1}: ${o}">${o}</button>
   `).join('');
-  document.querySelectorAll('.quiz-opt').forEach(btn => {
+  // Fix #9: Move focus to first option for keyboard users
+  const firstOpt = optContainer.querySelector('.quiz-opt');
+  if (firstOpt) firstOpt.focus();
+  optContainer.querySelectorAll('.quiz-opt').forEach(btn => {
     btn.addEventListener('click', () => {
       if (answered) return;
       answered = true;
       const chosen = +btn.dataset.idx;
       const correct = q.correct;
-      document.querySelectorAll('.quiz-opt').forEach((b, i) => {
+      optContainer.querySelectorAll('.quiz-opt').forEach((b, i) => {
         b.disabled = true;
+        b.setAttribute('aria-disabled', 'true');
         if (i === correct) b.classList.add('correct');
         else if (i === chosen && chosen !== correct) b.classList.add('wrong');
       });
       if (chosen === correct) quizScore++;
       document.getElementById('quizScore').textContent = `Score: ${quizScore}`;
-
-      // Add explanation
       const exp = document.createElement('div');
       exp.className = 'quiz-explanation';
+      exp.setAttribute('role', 'alert');
       exp.textContent = '💡 ' + q.exp;
-      document.getElementById('quizOptions').appendChild(exp);
-
+      optContainer.appendChild(exp);
       if (quizIdx < questions.length - 1) {
         document.getElementById('nextQuizBtn').classList.remove('hidden');
+        document.getElementById('nextQuizBtn').focus();
       } else {
         setTimeout(showResult, 800);
       }
@@ -334,14 +352,24 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
 
+// Fix #10: Chat bubble toggles aria-expanded; drawer toggles aria-hidden
 chatBubble.addEventListener('click', () => {
+  const isOpen = chatDrawer.classList.contains('open');
   chatDrawer.classList.toggle('open');
-  if (chatDrawer.classList.contains('open')) chatInput.focus();
+  chatBubble.setAttribute('aria-expanded', String(!isOpen));
+  chatDrawer.setAttribute('aria-hidden', String(isOpen));
+  if (!isOpen) chatInput.focus();
 });
-chatClose.addEventListener('click', () => chatDrawer.classList.remove('open'));
+chatClose.addEventListener('click', () => {
+  chatDrawer.classList.remove('open');
+  chatBubble.setAttribute('aria-expanded', 'false');
+  chatDrawer.setAttribute('aria-hidden', 'true');
+  chatBubble.focus();
+});
 document.getElementById('chatBtn').addEventListener('click', () => {
   chatDrawer.classList.add('open');
-  chatDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  chatBubble.setAttribute('aria-expanded', 'true');
+  chatDrawer.setAttribute('aria-hidden', 'false');
   chatInput.focus();
 });
 

@@ -82,8 +82,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 .step-arrow{position:absolute;bottom:1rem;right:1rem;color:var(--text2);font-size:.8rem;opacity:0;transition:opacity .3s}
 .step-card:hover .step-arrow{opacity:1}
 /* DETAIL PANEL */
+/* Fix #12: step panel starts hidden from screen readers */
 .step-detail-panel{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--bg2);border-left:1px solid var(--border);padding:2rem;z-index:200;transform:translateX(100%);transition:transform .3s;overflow-y:auto}
-.step-detail-panel.open{transform:translateX(0)}
+.step-detail-panel[aria-hidden="true"]{visibility:hidden}
+.step-detail-panel.open{transform:translateX(0);visibility:visible}
 .close-panel{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text2);cursor:pointer;padding:.4rem .8rem;margin-bottom:1.5rem;font-size:.9rem;transition:background .2s}
 .close-panel:hover{background:var(--card)}
 .panel-icon{font-size:3rem;margin-bottom:1rem}
@@ -124,7 +126,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 .faq-cat-btn.active,.faq-cat-btn:hover{background:var(--primary);border-color:var(--primary);color:#fff}
 .faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem}
 .faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.faq-question{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.4rem;cursor:pointer;font-weight:600;font-size:.95rem;transition:background .2s;gap:1rem}
+/* Fix #11: .faq-question is now a <button> — reset browser button defaults while keeping layout */
+.faq-question{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.4rem;cursor:pointer;font-weight:600;font-size:.95rem;transition:background .2s;gap:1rem;width:100%;background:none;border:none;color:var(--text);text-align:left;font-family:'Inter',sans-serif}
 .faq-question:hover{background:rgba(99,102,241,.05)}
 .faq-chevron{font-size:.75rem;transition:transform .3s;flex-none;color:var(--text2)}
 .faq-item.open .faq-chevron{transform:rotate(180deg)}
@@ -156,7 +159,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 .quiz-result p{color:var(--text2);margin-bottom:2rem}
 .score-big{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
 /* CHAT */
-.chat-bubble{position:fixed;bottom:2rem;right:2rem;width:62px;height:62px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:300;box-shadow:0 8px 30px rgba(99,102,241,.5);transition:transform .2s}
+/* Fix #13: chat-bubble is now a <button> — reset browser defaults */
+.chat-bubble{position:fixed;bottom:2rem;right:2rem;width:62px;height:62px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:300;box-shadow:0 8px 30px rgba(99,102,241,.5);transition:transform .2s;border:none;padding:0}
 .chat-bubble:hover{transform:scale(1.1)}
 .chat-bubble-icon{font-size:1.6rem}
 .chat-bubble-ping{position:absolute;width:100%;height:100%;border-radius:50%;background:rgba(99,102,241,.4);animation:pingAnim 2s ease-out infinite}
@@ -215,9 +219,13 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-of
 .goog-te-gadget .goog-te-combo{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.35rem .6rem;font-size:.78rem;font-family:'Inter',sans-serif;cursor:pointer;outline:none;transition:border-color .2s}
 .goog-te-gadget .goog-te-combo:hover,.goog-te-gadget .goog-te-combo:focus{border-color:var(--primary)}
 .goog-logo-link,.goog-te-gadget span{display:none!important}
+/* Fix #14: Suppress Google Translate top banner and floating elements */
+.goog-te-banner-frame,.skiptranslate iframe{display:none!important;height:0!important}
+body{top:0!important}
+.goog-tooltip,.goog-tooltip:hover{display:none!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
 /* Prevent translate bar from jumping layout */
 body.translated-rtl{direction:rtl}
-.skiptranslate iframe{display:none!important}
 /* RESPONSIVE */
 @media(max-width:900px){
   .hero{flex-direction:column;padding:7rem 2rem 4rem;text-align:center}
