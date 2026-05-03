@@ -34,7 +34,7 @@ window.addEventListener('scroll', () => {
 });
 
 // ── Active nav link on scroll + GA4 section tracking ─────────
-const sections = ['home','process','timeline','roles','faq','quiz'];
+const sections = ['home','process','timeline','polling-map','roles','faq','quiz'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -443,9 +443,74 @@ const revealObserver = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.step-card, .role-card, .t-card, .faq-item').forEach(el => {
+document.querySelectorAll('.step-card, .role-card, .t-card, .faq-item, .map-info-card').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
   el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
   revealObserver.observe(el);
+});
+
+// ── GOOGLE MAPS — Polling Station Finder ───────────────────────
+/**
+ * Updates the Google Maps iframe to search for polling stations near a location.
+ * @param {string} query - Address, city, or lat/lng string to search near
+ * @param {string} [label] - Human-readable label shown in status bar
+ */
+function updateMap(query, label) {
+  const frame = document.getElementById('pollingMapFrame');
+  const status = document.getElementById('mapStatus');
+  const encoded = encodeURIComponent('polling stations near ' + query);
+  frame.src = `https://maps.google.com/maps?q=${encoded}&output=embed&z=13`;
+  if (label) {
+    status.textContent = `📍 Showing polling stations near: ${label}`;
+  }
+  // GA4: track map search
+  trackEvent('map_search', { search_query: query });
+}
+
+// Address search button
+document.getElementById('mapSearchBtn').addEventListener('click', () => {
+  const addr = document.getElementById('mapAddressInput').value.trim();
+  if (!addr) {
+    document.getElementById('mapStatus').textContent = '⚠️ Please enter an address or city first.';
+    document.getElementById('mapAddressInput').focus();
+    return;
+  }
+  updateMap(addr, addr);
+});
+
+// Allow Enter key in address input
+document.getElementById('mapAddressInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('mapSearchBtn').click();
+});
+
+// Geolocation button
+document.getElementById('mapLocateBtn').addEventListener('click', () => {
+  const status = document.getElementById('mapStatus');
+  if (!navigator.geolocation) {
+    status.textContent = '❌ Geolocation is not supported by your browser.';
+    return;
+  }
+  status.textContent = '🔄 Detecting your location…';
+  document.getElementById('mapLocateBtn').disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude, longitude } = pos.coords;
+      const query = `${latitude},${longitude}`;
+      updateMap(query, 'your current location');
+      document.getElementById('mapLocateBtn').disabled = false;
+      // GA4: track geolocation use
+      trackEvent('map_geolocation_used');
+    },
+    err => {
+      const messages = {
+        1: '🚫 Location access denied. Please allow location access in your browser.',
+        2: '🚫 Unable to determine your location.',
+        3: '⏱️ Location request timed out. Please try again.'
+      };
+      status.textContent = messages[err.code] || '❌ Could not get your location.';
+      document.getElementById('mapLocateBtn').disabled = false;
+    },
+    { timeout: 10000, enableHighAccuracy: true }
+  );
 });
