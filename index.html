@@ -5,15 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VoteGuide — Interactive Election Assistant</title>
   <meta name="description" content="Understand the election process, timelines, and steps with VoteGuide — your interactive and easy-to-follow election assistant." />
+  <!-- Security: Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://translate.google.com https://translate.googleapis.com https://translate-pa.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://translate.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://www.google.com https://translate.google.com https://translate.googleapis.com https://www.gstatic.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://translate.googleapis.com https://translate-pa.googleapis.com; frame-src https://translate.google.com;" />
+  <!-- Google Fonts (Google Service 1) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google Analytics 4 (Google Service 2) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VOTEGUIDE26X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VOTEGUIDE26X', { anonymize_ip: true });
+  </script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Accessibility: Skip to main content -->
+  <a href="#main-content" class="skip-nav">Skip to main content</a>
 
   <!-- Animated background particles -->
-  <div class="bg-particles" id="bgParticles"></div>
+  <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
 
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar" id="navbar">
@@ -22,22 +35,24 @@
         <div class="brand-icon">🗳️</div>
         <span class="brand-text">VoteGuide</span>
       </div>
-      <div class="nav-links">
+      <div class="nav-links" role="navigation" aria-label="Main navigation">
         <a href="#home"     class="nav-link active" data-section="home">Home</a>
         <a href="#process"  class="nav-link" data-section="process">Process</a>
         <a href="#timeline" class="nav-link" data-section="timeline">Timeline</a>
         <a href="#faq"      class="nav-link" data-section="faq">FAQ</a>
         <a href="#quiz"     class="nav-link" data-section="quiz">Quiz</a>
       </div>
-      <button class="nav-cta" id="getStartedBtn">Get Started →</button>
-      <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <!-- Google Translate Widget (Google Service 3) -->
+      <div id="google_translate_element" class="translate-widget" aria-label="Language selector"></div>
+      <button class="nav-cta" id="getStartedBtn" data-testid="get-started-btn">Get Started →</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
 
   <!-- Mobile Menu -->
-  <div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Mobile navigation">
     <a href="#home"     class="mobile-link" data-section="home">🏠 Home</a>
     <a href="#process"  class="mobile-link" data-section="process">📋 Process</a>
     <a href="#timeline" class="mobile-link" data-section="timeline">📅 Timeline</a>
@@ -46,13 +61,13 @@
   </div>
 
   <!-- ===== HERO SECTION ===== -->
-  <section class="hero" id="home">
-    <div class="hero-content">
+  <section class="hero" id="home" aria-labelledby="heroHeading">
+    <div class="hero-content" id="main-content" role="main">
       <div class="hero-badge">
         <span class="badge-dot"></span>
         Interactive Election Guide 2026
       </div>
-      <h1 class="hero-title">
+      <h1 class="hero-title" id="heroHeading">
         Understand Every <br />
         <span class="gradient-text">Step of Democracy</span>
       </h1>
@@ -60,8 +75,8 @@
         Navigate the election process with confidence. Interactive timelines, step-by-step guides, and an AI-powered assistant — all in one place.
       </p>
       <div class="hero-actions">
-        <button class="btn-primary" id="exploreBtn">Explore the Process</button>
-        <button class="btn-ghost" id="chatBtn">💬 Ask the Assistant</button>
+        <button class="btn-primary" id="exploreBtn" data-testid="explore-btn">Explore the Process</button>
+        <button class="btn-ghost" id="chatBtn" data-testid="chat-btn">💬 Ask the Assistant</button>
       </div>
       <div class="hero-stats">
         <div class="stat-card">
@@ -281,5 +296,17 @@
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <!-- Google Translate Widget init (Google Service 3) -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'ar,zh-CN,fr,de,hi,es,pt,ru,sw,ur',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

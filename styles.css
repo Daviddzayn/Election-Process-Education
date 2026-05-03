@@ -203,6 +203,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+/* ACCESSIBILITY — Skip nav */
+.skip-nav{position:absolute;top:-100px;left:1rem;background:var(--primary);color:#fff;padding:.6rem 1.2rem;border-radius:0 0 10px 10px;font-weight:700;text-decoration:none;z-index:9999;transition:top .2s}
+.skip-nav:focus{top:0}
+/* ACCESSIBILITY — Focus visible outlines */
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:4px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+/* GOOGLE TRANSLATE WIDGET */
+.translate-widget{flex:none}
+.goog-te-gadget{font-family:'Inter',sans-serif!important;font-size:0!important}
+.goog-te-gadget .goog-te-combo{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.35rem .6rem;font-size:.78rem;font-family:'Inter',sans-serif;cursor:pointer;outline:none;transition:border-color .2s}
+.goog-te-gadget .goog-te-combo:hover,.goog-te-gadget .goog-te-combo:focus{border-color:var(--primary)}
+.goog-logo-link,.goog-te-gadget span{display:none!important}
+/* Prevent translate bar from jumping layout */
+body.translated-rtl{direction:rtl}
+.skiptranslate iframe{display:none!important}
 /* RESPONSIVE */
 @media(max-width:900px){
   .hero{flex-direction:column;padding:7rem 2rem 4rem;text-align:center}
@@ -211,6 +226,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
   .hero-stats{justify-content:center}
   .hero-visual{display:none}
   .nav-links,.nav-cta{display:none}
+  .translate-widget{display:none}
   .hamburger{display:flex}
   .timeline-line{display:none}
   .timeline-event,.timeline-event:nth-child(even){flex-direction:column;align-items:flex-start}
@@ -218,3 +234,4 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
   .t-card{width:100%}
   .chat-drawer{right:1rem;left:1rem;width:auto;bottom:5.5rem}
 }
+

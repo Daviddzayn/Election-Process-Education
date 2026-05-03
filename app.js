@@ -1,4 +1,20 @@
-// ── Particles ──────────────────────────────────────────────
+/* jshint esversion: 6 */
+'use strict';
+
+// ── Google Analytics 4 — Event Helper ──────────────────────────
+/**
+ * Sends a custom event to Google Analytics 4.
+ * @param {string} eventName - GA4 event name
+ * @param {Object} params    - Additional event parameters
+ */
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag === 'function') {
+    gtag('event', eventName, params);
+  }
+}
+
+// ── Particles ──────────────────────────────────────────────────
+/** Spawns decorative animated background particles. */
 (function spawnParticles() {
   const container = document.getElementById('bgParticles');
   const colors = ['#6366f1','#8b5cf6','#ec4899','#3b82f6','#10b981'];
@@ -11,13 +27,13 @@
   }
 })();
 
-// ── Navbar scroll effect ─────────────────────────────────────
+// ── Navbar scroll effect ──────────────────────────────────────
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').style.background =
     window.scrollY > 60 ? 'rgba(10,10,15,0.97)' : 'rgba(10,10,15,0.8)';
 });
 
-// ── Active nav link on scroll ────────────────────────────────
+// ── Active nav link on scroll + GA4 section tracking ─────────
 const sections = ['home','process','timeline','roles','faq','quiz'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
@@ -25,6 +41,7 @@ const observer = new IntersectionObserver(entries => {
       document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
       const l = document.querySelector(`.nav-link[data-section="${e.target.id}"]`);
       if (l) l.classList.add('active');
+      trackEvent('section_view', { section_name: e.target.id });
     }
   });
 }, { threshold: 0.4 });
@@ -33,10 +50,16 @@ sections.forEach(id => { const el = document.getElementById(id); if (el) observe
 // ── Hamburger ─────────────────────────────────────────────────
 document.getElementById('hamburger').addEventListener('click', () => {
   const m = document.getElementById('mobileMenu');
-  m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  const btn = document.getElementById('hamburger');
+  const isOpen = m.style.display === 'flex';
+  m.style.display = isOpen ? 'none' : 'flex';
+  btn.setAttribute('aria-expanded', String(!isOpen));
 });
 document.querySelectorAll('.mobile-link').forEach(l => {
-  l.addEventListener('click', () => { document.getElementById('mobileMenu').style.display = 'none'; });
+  l.addEventListener('click', () => {
+    document.getElementById('mobileMenu').style.display = 'none';
+    document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+  });
 });
 
 // ── Hero CTA ──────────────────────────────────────────────────
@@ -61,6 +84,10 @@ document.querySelectorAll('.ballot-option').forEach((opt, idx) => {
 
 // ── PROCESS STEPS ─────────────────────────────────────────────
 let activeTab = 'general';
+/**
+ * Renders election step cards for the given tab type.
+ * @param {string} tab - One of 'general' | 'student' | 'local'
+ */
 function renderSteps(tab) {
   const steps = ELECTION_DATA.steps[tab];
   const container = document.getElementById('stepsContainer');
@@ -79,18 +106,31 @@ function renderSteps(tab) {
   });
 }
 
+/**
+ * Opens the step detail side panel with full description.
+ * @param {Object} step - Step data object from ELECTION_DATA
+ */
 function openPanel(step) {
-  document.getElementById('panelContent').innerHTML = `
+  const panel = document.getElementById('stepDetailPanel');
+  const content = document.getElementById('panelContent');
+  // Build panel content using safe DOM methods where possible
+  content.innerHTML = `
     <div class="panel-icon">${step.icon}</div>
     <div class="panel-title">${step.title}</div>
     <div class="panel-badge" style="background:${step.color}22;color:${step.color}">Step ${step.id}</div>
     <p class="panel-detail">${step.detail}</p>
   `;
-  document.getElementById('stepDetailPanel').classList.add('open');
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+  // GA4: track step viewed
+  trackEvent('step_viewed', { step_title: step.title, step_id: step.id });
+  document.getElementById('closePanel').focus();
 }
 
 document.getElementById('closePanel').addEventListener('click', () => {
-  document.getElementById('stepDetailPanel').classList.remove('open');
+  const panel = document.getElementById('stepDetailPanel');
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
 });
 
 document.querySelectorAll('.process-tab').forEach(btn => {
@@ -100,6 +140,8 @@ document.querySelectorAll('.process-tab').forEach(btn => {
     activeTab = btn.dataset.tab;
     document.getElementById('stepDetailPanel').classList.remove('open');
     renderSteps(activeTab);
+    // GA4: track election type tab switch
+    trackEvent('tab_switch', { tab_name: activeTab });
   });
 });
 
@@ -174,11 +216,29 @@ function renderFaqs(query = '') {
 renderFaqCategories();
 renderFaqs();
 
-document.getElementById('faqSearch').addEventListener('input', e => {
+/**
+ * Debounce utility — delays function call until user stops typing.
+ * @param {Function} fn    - Function to debounce
+ * @param {number}   delay - Delay in milliseconds
+ * @returns {Function}
+ */
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+document.getElementById('faqSearch').addEventListener('input', debounce(e => {
   activeCategory = 'All';
   renderFaqCategories();
   renderFaqs(e.target.value);
-});
+  // GA4: track FAQ search
+  if (e.target.value.length > 2) {
+    trackEvent('faq_search', { search_term: e.target.value });
+  }
+}, 300));
 
 // ── QUIZ ──────────────────────────────────────────────────────
 let quizIdx = 0, quizScore = 0, answered = false;
@@ -189,6 +249,8 @@ document.getElementById('startQuizBtn').addEventListener('click', () => {
   document.getElementById('quizBody').classList.remove('hidden');
   quizIdx = 0; quizScore = 0;
   renderQuestion();
+  // GA4: track quiz start
+  trackEvent('quiz_start');
 });
 
 function renderQuestion() {
@@ -236,10 +298,14 @@ document.getElementById('nextQuizBtn').addEventListener('click', () => {
   renderQuestion();
 });
 
+/**
+ * Displays the final quiz result screen with score and feedback.
+ */
 function showResult() {
   document.getElementById('quizBody').classList.add('hidden');
   const res = document.getElementById('quizResult');
   res.classList.remove('hidden');
+  res.setAttribute('aria-live', 'polite');
   const pct = Math.round((quizScore / questions.length) * 100);
   const msg = pct >= 80 ? 'Civic Champion! 🏆' : pct >= 60 ? 'Good Effort! 👍' : 'Keep Learning! 📚';
   const sub = pct >= 80 ? "You clearly understand how democracy works. Democracy is in safe hands!" :
@@ -252,6 +318,8 @@ function showResult() {
     <p>${sub}</p>
     <button class="btn-primary" id="retryBtn" style="margin-top:1rem">Try Again</button>
   `;
+  // GA4: track quiz completion with score
+  trackEvent('quiz_complete', { score: quizScore, total: questions.length, percentage: pct });
   document.getElementById('retryBtn').addEventListener('click', () => {
     res.classList.add('hidden');
     document.getElementById('quizIntro').classList.remove('hidden');
@@ -314,13 +382,20 @@ function getBotReply(text) {
   return R['default'];
 }
 
+/**
+ * Sends a user message in the chat and triggers a bot reply.
+ * @param {string} text - The user's message text
+ */
 function sendChat(text) {
   chatInput.value = '';
   document.getElementById('chatSuggestions')?.remove();
   addMsg(text, 'user');
+  // GA4: track chat question
+  trackEvent('chat_message', { question_topic: text.substring(0, 50) });
   // Typing indicator
   const typing = document.createElement('div');
   typing.className = 'chat-msg bot typing-indicator';
+  typing.setAttribute('aria-label', 'ElectionBot is typing');
   typing.innerHTML = '<div class="msg-avatar">🗳️</div><div class="msg-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
   chatMessages.appendChild(typing);
   chatMessages.scrollTop = chatMessages.scrollHeight;
