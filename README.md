@@ -1,4 +1,4 @@
-# 🗳️ VoteGuide — Interactive Election Assistant
+# 🗳️ Election Process Education — Interactive Election Assistant
 
 > **Google Antigravity Hackathon Submission**  
 > Challenge Vertical: **Civic Education & Democratic Participation**
@@ -52,7 +52,7 @@ If no match is found, the bot guides users to the most relevant section of the a
 
 ### Architecture
 ```
-ElectionStudentSystem/
+Election-Process-Education/
 ├── index.html      # Full page structure — 6 interactive sections
 ├── styles.css      # Complete dark-mode design system with animations
 ├── data.js         # All structured data (steps, timeline, FAQs, quiz, chat)
@@ -129,12 +129,12 @@ No build step or server required:
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/ElectionStudentSystem.git
+git clone https://github.com/<your-username>/Election-Process-Education.git
 
 # Open directly in browser
-open ElectionStudentSystem/index.html
+open Election-Process-Education/index.html
 # OR on Windows:
-start ElectionStudentSystem/index.html
+start Election-Process-Education/index.html
 ```
 
 ---
