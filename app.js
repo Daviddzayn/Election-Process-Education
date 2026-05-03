@@ -33,19 +33,45 @@ window.addEventListener('scroll', () => {
     window.scrollY > 60 ? 'rgba(10,10,15,0.97)' : 'rgba(10,10,15,0.8)';
 });
 
-// ── Active nav link on scroll + GA4 section tracking ─────────
+// ── SPA Routing (Multi-Page simulation) ──────────────────────
 const sections = ['home','process','timeline','polling-map','roles','faq','quiz'];
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      const l = document.querySelector(`.nav-link[data-section="${e.target.id}"]`);
-      if (l) l.classList.add('active');
-      trackEvent('section_view', { section_name: e.target.id });
-    }
+
+function navigateToPage(pageId) {
+  // Hide all sections
+  document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active-page'));
+  // Show target section
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.classList.add('active-page');
+    // Scroll to top of the page for fresh feel
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Update nav links
+    document.querySelectorAll('.nav-link, .mobile-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll(`.nav-link[data-section="${pageId}"], .mobile-link[data-section="${pageId}"]`).forEach(l => l.classList.add('active'));
+    // GA4 Tracking
+    trackEvent('page_view', { page_title: pageId });
+  }
+}
+
+// Intercept all internal nav links
+document.querySelectorAll('.nav-link, .mobile-link').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const targetId = link.getAttribute('data-section');
+    navigateToPage(targetId);
   });
-}, { threshold: 0.4 });
-sections.forEach(id => { const el = document.getElementById(id); if (el) observer.observe(el); });
+});
+
+// Also intercept footer links that point to pages
+document.querySelectorAll('.footer-col a').forEach(link => {
+  const href = link.getAttribute('href');
+  if (href && href.startsWith('#')) {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      navigateToPage(href.substring(1));
+    });
+  }
+});
 
 // ── Hamburger ─────────────────────────────────────────────────
 document.getElementById('hamburger').addEventListener('click', () => {
@@ -62,13 +88,10 @@ document.querySelectorAll('.mobile-link').forEach(l => {
   });
 });
 
-// ── Hero CTA ──────────────────────────────────────────────────
-document.getElementById('exploreBtn').addEventListener('click', () => {
-  document.getElementById('process').scrollIntoView({ behavior: 'smooth' });
-});
-document.getElementById('getStartedBtn').addEventListener('click', () => {
-  document.getElementById('process').scrollIntoView({ behavior: 'smooth' });
-});
+// Start button navigation
+document.getElementById('getStartedBtn').addEventListener('click', () => navigateToPage('process'));
+document.getElementById('exploreBtn').addEventListener('click', () => navigateToPage('process'));
+
 
 // ── Ballot card interaction ───────────────────────────────────
 document.querySelectorAll('.ballot-option').forEach((opt, idx) => {

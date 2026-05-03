@@ -21,8 +21,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 .mobile-menu{display:none;position:fixed;top:70px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1rem;z-index:99;flex-direction:column;gap:.5rem}
 .mobile-link{color:var(--text2);text-decoration:none;padding:.75rem 1rem;border-radius:10px;font-weight:500;transition:background .2s}
 .mobile-link:hover{background:var(--bg3);color:var(--text)}
-/* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;justify-content:space-between;gap:3rem;padding:8rem 4rem 4rem;max-width:1300px;margin:0 auto;position:relative;z-index:1}
+/* SPA Multi-Page Routing CSS */
+.page-section {
+  display: none;
+}
+.page-section.active-page {
+  display: block;
+  animation: pageFadeIn 0.4s ease forwards;
+}
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HERO (Home Page) */
+.hero{min-height:100vh;display:none;align-items:center;justify-content:space-between;gap:3rem;padding:8rem 4rem 4rem;max-width:1300px;margin:0 auto;position:relative;z-index:1}
+.hero.active-page{display:flex}
 .hero-content{flex:1;max-width:600px}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);padding:.4rem 1rem;border-radius:99px;font-size:.85rem;color:var(--primary);font-weight:600;margin-bottom:1.5rem}
 .badge-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:pulse 2s infinite}
