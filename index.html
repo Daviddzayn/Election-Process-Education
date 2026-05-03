@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoteGuide — Interactive Election Assistant</title>
+  <meta name="description" content="Understand the election process, timelines, and steps with VoteGuide — your interactive and easy-to-follow election assistant." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Animated background particles -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <div class="brand-icon">🗳️</div>
+        <span class="brand-text">VoteGuide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#home"     class="nav-link active" data-section="home">Home</a>
+        <a href="#process"  class="nav-link" data-section="process">Process</a>
+        <a href="#timeline" class="nav-link" data-section="timeline">Timeline</a>
+        <a href="#faq"      class="nav-link" data-section="faq">FAQ</a>
+        <a href="#quiz"     class="nav-link" data-section="quiz">Quiz</a>
+      </div>
+      <button class="nav-cta" id="getStartedBtn">Get Started →</button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home"     class="mobile-link" data-section="home">🏠 Home</a>
+    <a href="#process"  class="mobile-link" data-section="process">📋 Process</a>
+    <a href="#timeline" class="mobile-link" data-section="timeline">📅 Timeline</a>
+    <a href="#faq"      class="mobile-link" data-section="faq">❓ FAQ</a>
+    <a href="#quiz"     class="mobile-link" data-section="quiz">🧠 Quiz</a>
+  </div>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Interactive Election Guide 2026
+      </div>
+      <h1 class="hero-title">
+        Understand Every <br />
+        <span class="gradient-text">Step of Democracy</span>
+      </h1>
+      <p class="hero-subtitle">
+        Navigate the election process with confidence. Interactive timelines, step-by-step guides, and an AI-powered assistant — all in one place.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="exploreBtn">Explore the Process</button>
+        <button class="btn-ghost" id="chatBtn">💬 Ask the Assistant</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-number">7</div>
+          <div class="stat-label">Key Stages</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <div class="stat-number">30+</div>
+          <div class="stat-label">FAQs Answered</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Free & Interactive</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ballot-card" id="ballotCard">
+        <div class="ballot-header">Official Ballot</div>
+        <div class="ballot-options">
+          <div class="ballot-option selected" id="bOpt1">
+            <div class="ballot-circle filled"></div>
+            <div class="ballot-name">Your Vote Matters</div>
+          </div>
+          <div class="ballot-option" id="bOpt2">
+            <div class="ballot-circle"></div>
+            <div class="ballot-name">Democracy Wins</div>
+          </div>
+          <div class="ballot-option" id="bOpt3">
+            <div class="ballot-circle"></div>
+            <div class="ballot-name">Every Voice Counts</div>
+          </div>
+        </div>
+        <button class="ballot-submit">Cast Your Vote ✓</button>
+      </div>
+      <div class="floating-chip chip-1">📋 Registration Open</div>
+      <div class="floating-chip chip-2">✅ Verified Voter</div>
+      <div class="floating-chip chip-3">🗳️ Polls Open</div>
+    </div>
+  </section>
+
+  <!-- ===== PROCESS SECTION ===== -->
+  <section class="section process-section" id="process">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Step by Step</div>
+        <h2 class="section-title">The Election Process</h2>
+        <p class="section-subtitle">From announcement to results — here's how every election unfolds, explained clearly.</p>
+      </div>
+
+      <div class="process-controls">
+        <button class="process-tab active" data-tab="general" id="tabGeneral">🌍 General Election</button>
+        <button class="process-tab" data-tab="student" id="tabStudent">🎓 Student Election</button>
+        <button class="process-tab" data-tab="local" id="tabLocal">🏘️ Local Election</button>
+      </div>
+
+      <div class="steps-container" id="stepsContainer">
+        <!-- Steps rendered by JS -->
+      </div>
+
+      <div class="step-detail-panel" id="stepDetailPanel">
+        <button class="close-panel" id="closePanel">✕</button>
+        <div class="panel-content" id="panelContent"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIMELINE SECTION ===== -->
+  <section class="section timeline-section" id="timeline">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Calendar</div>
+        <h2 class="section-title">Election Timeline</h2>
+        <p class="section-subtitle">Track key dates and milestones from campaign start to results day.</p>
+      </div>
+      <div class="timeline-wrapper">
+        <div class="timeline-line"></div>
+        <div class="timeline-events" id="timelineEvents">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INTERACTIVE ROLES ===== -->
+  <section class="section roles-section" id="roles">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Who's Involved?</div>
+        <h2 class="section-title">Election Roles Explained</h2>
+        <p class="section-subtitle">Hover over each card to learn the responsibilities of every participant.</p>
+      </div>
+      <div class="roles-grid" id="rolesGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ SECTION ===== -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Got Questions?</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Everything you need to know about elections, answered clearly.</p>
+      </div>
+
+      <div class="faq-search-wrap">
+        <span class="faq-search-icon">🔍</span>
+        <input type="text" class="faq-search" id="faqSearch" placeholder="Search a question…" aria-label="Search FAQs" />
+      </div>
+
+      <div class="faq-categories" id="faqCategories">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="faq-list" id="faqList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ SECTION ===== -->
+  <section class="section quiz-section" id="quiz">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Test Yourself</div>
+        <h2 class="section-title">Election Knowledge Quiz</h2>
+        <p class="section-subtitle">10 questions. How well do you know the election process?</p>
+      </div>
+      <div class="quiz-card" id="quizCard">
+        <div class="quiz-intro" id="quizIntro">
+          <div class="quiz-icon">🧠</div>
+          <h3>Are you election-ready?</h3>
+          <p>Test your knowledge of the election process, voting rights, and civic responsibilities.</p>
+          <button class="btn-primary" id="startQuizBtn">Start Quiz</button>
+        </div>
+        <div class="quiz-body hidden" id="quizBody">
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+          </div>
+          <div class="quiz-meta">
+            <span id="quizCounter">Question 1 / 10</span>
+            <span id="quizScore">Score: 0</span>
+          </div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <button class="btn-primary hidden" id="nextQuizBtn">Next Question →</button>
+        </div>
+        <div class="quiz-result hidden" id="quizResult"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI CHAT ASSISTANT ===== -->
+  <div class="chat-bubble" id="chatBubble" title="Ask the Election Assistant">
+    <div class="chat-bubble-icon">💬</div>
+    <div class="chat-bubble-ping"></div>
+  </div>
+
+  <div class="chat-drawer" id="chatDrawer">
+    <div class="chat-header">
+      <div class="chat-avatar">🗳️</div>
+      <div class="chat-info">
+        <div class="chat-name">ElectionBot</div>
+        <div class="chat-status"><span class="online-dot"></span> Online — Ready to help</div>
+      </div>
+      <button class="chat-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        <div class="msg-avatar">🗳️</div>
+        <div class="msg-bubble">Hi! I'm ElectionBot 👋 Ask me anything about the election process, voter registration, polling, results, or your rights as a voter!</div>
+      </div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="suggestion-chip" data-q="How do I register to vote?">How do I register to vote?</button>
+        <button class="suggestion-chip" data-q="What happens on Election Day?">What happens on Election Day?</button>
+        <button class="suggestion-chip" data-q="How are votes counted?">How are votes counted?</button>
+        <button class="suggestion-chip" data-q="What is the Electoral College?">What is the Electoral College?</button>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask about elections…" aria-label="Chat message" />
+      <button class="chat-send" id="chatSend">➤</button>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-icon">🗳️</div>
+        <span class="brand-text">VoteGuide</span>
+        <p>Making democracy accessible, one voter at a time.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="#process">Election Process</a>
+          <a href="#timeline">Timeline</a>
+          <a href="#faq">FAQ</a>
+          <a href="#quiz">Knowledge Quiz</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="#roles">Key Roles</a>
+          <a href="#home">Home</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 VoteGuide · Built for civic education · Every vote counts 🗳️</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
